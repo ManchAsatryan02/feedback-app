@@ -14,10 +14,10 @@ class BlogController extends Controller
     public function index()
     {
         // Get blog data
-        $blog_items = Blog::orderBy('id', 'desc')->get();
+        $blog_itemss = Blog::orderBy('id', 'desc')->get();
         
         // Return data with Json
-        return response()->json($blog_items);
+        return response()->json($blog_itemss);
     }
 
     /**
