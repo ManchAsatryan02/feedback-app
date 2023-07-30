@@ -28,14 +28,8 @@ class ContactController extends Controller
         // Get contcat detail data
         $contcat_detail = ContactMessage::findOrFail($id);
 
-        // Make empty data array
-        $data = (object)[];
-
-        // Push all page data to array
-        $data->contcat_detail = $contcat_detail;
-        
         // Return data with Json
-        return response()->json($data);
+        return response()->json($contcat_detail);
     }
 
     /**

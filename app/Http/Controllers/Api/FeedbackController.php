@@ -8,6 +8,7 @@ use App\Http\Requests\FeedbackRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Services\FeedbackService;
 use App\Traits\ImageUploadTrait;
+use App\Models\Feedback;
 
 class FeedbackController extends Controller
 {
@@ -24,14 +25,8 @@ class FeedbackController extends Controller
         // Get feedback data
         $feedback_items = Feedback::where('status', 1)->orderBy('id', 'desc')->get();
 
-        // Make empty data array
-        $data = (object)[];
-
-        // Push all page data to array
-        $data->feedback_items = $feedback_items;
-        
         // Return data with Json
-        return response()->json($data);
+        return response()->json($feedback_items);
     }
     
     // Send message from home page as feedback

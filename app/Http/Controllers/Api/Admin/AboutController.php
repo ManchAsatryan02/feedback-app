@@ -17,8 +17,8 @@ class AboutController extends Controller
         // Get about data
         $about_data = About::first();
 
-        // Return data with Json
-        return response()->json($about_data);
+        // Return data to view
+        return view('admin.pages.home', compact('about_data'));
     }
 
     /**

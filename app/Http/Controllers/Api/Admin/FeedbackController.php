@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Feedback;
+use App\Requests\FeedbackRequest;
+use App\Service\FeedbackService;
 
 class FeedbackController extends Controller
 {
@@ -24,58 +26,19 @@ class FeedbackController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(FeedbackRequest $request)
     {
         // Validate sended datas
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:50',
-            'description' => 'required|string|max:16777215',
-            'phone' => 'required|max:50',
-        ]);
+        $validate = $request->validate();
          
-        // Checking validated data
-        if($validator->fails()) { // Has incorrect part
-            // Return error response
-            return response([
-                'message' => 'Provided data is incorrect'
-            ], 422);
-        }else{ // All of correct
-            // Make new feedback data
-            $new_feedback = new Feedback;
-            $new_feedback->title = $request->title;
-            $new_feedback->phone = $request->phone;
-            $new_feedback->description = $request->description;
-            $new_feedback->status = 1;
-        
-            // Check has request image or not
-            if ($request->hasFile('img')) { // Has a image
-                // Get image file
-                $image = $request->file('img');
-    
-                // Make image new name
-                $filename = rand(1,1000).'_'. date('YmdHis') . '_' . time() . '.' . $image->getClientOriginalExtension();
+        $data = $request->all();
 
-                // Get path
-                $image_path = 'assets/images/feedback/' . $filename;
+        $this->FeedbackService()->store($data);
 
-                // Save the image to a specific path
-                $image->save($image_path);
-
-                // Add image filed before save data
-                $new_feedback->img = $filenema;
-            }else{ // Has not a image
-                // Add image filed before save data
-                $new_feedback->img = NULL;
-            }
-
-            // Save data to DB
-            $new_feedback->save();
-
-            // Return success response
-            return response([
-                'message' => 'Feedback sended successfully !'
-            ]);
-        }
+        // Return success response
+        return response([
+            'message' => 'Feedback sended successfully !'
+        ]);
     }
 
     /**
@@ -86,78 +49,26 @@ class FeedbackController extends Controller
         // Get feedback detail data
         $feedback_detail = Feedback::findOrFail($id);
 
-        // Make empty data array
-        $data = (object)[];
-
-        // Push all page data to array
-        $data->feedback_detail = $feedback_detail;
-        
         // Return data with Json
-        return response()->json($data);
+        return response()->json($feedback_detail);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(FeedbackRequest $request, string $id)
     {
         // Validate sended datas
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:50',
-            'description' => 'required|string|max:16777215',
-            'phone' => 'required|max:50',
-            'status' => 'required',
-        ]);
+        $validate = $request->validate();
          
-        // Checking validated data
-        if($validator->fails()) { // Has incorrect part
-            // Return error response
-            return response([
-                'message' => 'Provided data is incorrect'
-            ], 422);
-        }else{ // All of correct
-            // Make new feedback data
-            $new_feedback = Feedback::findOrFail($id);
-            $new_feedback->title = $request->title;
-            $new_feedback->phone = $request->phone;
-            $new_feedback->description = $request->description;
-            $new_feedback->status = $request->status;
-        
-            // Check has request image or not
-            if ($request->hasFile('img')) { // Has a image
-                // Get image file
-                $image = $request->file('img');
-    
-                // Make image new name
-                $filename = rand(1,1000).'_'. date('YmdHis') . '_' . time() . '.' . $image->getClientOriginalExtension();
+        $data = $request->all();
 
-                // Get path
-                $image_path = 'assets/images/feedback/' . $filename;
+        $this->FeedbackService()->update($data);
 
-                // Save the image to a specific path
-                $image->save($image_path);
-
-                // Add image filed before save data
-                $new_feedback->img = $filenema;
-
-                // Get old image path
-                $old_image_path = 'assets/images/feedback/'.$image;
-
-                // Check image file exists
-                if(file_exists($old_image_path)) {
-                    // Destroy from storage
-                    unlink($old_image_path);
-                }
-            }
-
-            // Save data to DB
-            $new_feedback->save();
-
-            // Return success response
-            return response([
-                'message' => 'Feedback updated successfully !'
-            ]);
-        }
+        // Return success response
+        return response([
+            'message' => 'Feedback updated successfully !'
+        ]);
     }
 
     /**

@@ -17,8 +17,8 @@ class ApplicationController extends Controller
         // Get application data
         $application_items = Appliction::orderBy('id', 'desc')->get();
 
-        // Return data with Json
-        return response()->json($application_items);
+        // Return data to view
+        return view('admin.pages.application', compact('application_items'));
     }
 
     /**
@@ -31,7 +31,7 @@ class ApplicationController extends Controller
       
         $data = $request->all();
 
-        $this->ApplicationRequest()->store($data);
+        $this->ApplicationService()->store($data);
 
         // Return success response
         return response([
@@ -54,12 +54,14 @@ class ApplicationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(ApplicationRequest $request, string $id)
     {
         // Validate sended datas
         $validate = $request->validate();
          
-        
+        $data = $request->all();
+
+        $this->ApplicationService()->update($data);
     }
 
     /**
