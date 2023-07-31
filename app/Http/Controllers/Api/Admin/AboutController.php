@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\About;
-use App\Requets\Admin\AboutRequest;
+use App\Services\Admin\AboutService;
+use App\Http\Requests\Admin\AboutRequest;
 
 class AboutController extends Controller
 {
@@ -15,10 +16,10 @@ class AboutController extends Controller
     public function index()
     {
         // Get about data
-        $about_data = About::first();
+        $about_item = About::first();
 
         // Return data to view
-        return view('admin.pages.home', compact('about_data'));
+        return view('admin.pages.about', compact('about_item'));
     }
 
     /**
@@ -27,15 +28,13 @@ class AboutController extends Controller
     public function update(AboutRequest $request)
     {
         // Validate sended datas
-        $validate = $request->validate();
+        $validate = $request->validated();
 
         $data = $request->all();
         
-        $this->AboutRequest()->handle($data);
+       (new AboutService)->handle($data);
          
         // Return success response
-        return response()->json([
-            'status' => true
-        ]);
+        return redirect()->back();
     }
 }

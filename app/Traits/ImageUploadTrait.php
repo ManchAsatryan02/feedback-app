@@ -2,9 +2,11 @@
 
 namespace App\Traits;
 
+use Illuminate\Support\Facades\Storage;
+
 trait ImageUploadTrait{
 
-    public function handle($file, $folder, $type = 0) {
+    public function handle($file, $folder, $type = 0, $oldImage = null) {
         $image = $file;
 
         if($type == 0){
@@ -32,13 +34,12 @@ trait ImageUploadTrait{
         }else{
             $storage = Storage::disk('public');
             $fileName = rand(1,1000).'_'. date('YmdHis') . '_' . time() . '.' . $image->getClientOriginalExtension();
-            $storage->put($folder . '/' . $fileName, $image, 'public');
+            $image->storeAs('public/',$folder . '/' . $fileName);
         }
 
         $webp = 'storage/'. $folder. '/'.$fileName;
         
         $im = imagecreatefromstring(file_get_contents($webp));
-        
         imagepalettetotruecolor($im);
         
         $imageName1 = preg_replace('"\.(jpg|jpeg|png|webp)$"', '.webp', $fileName);
@@ -49,6 +50,39 @@ trait ImageUploadTrait{
         
         imagewebp($im, $fileName, 100);
 
+        if($oldImage != null){
+            $this->unlinkFile($oldImage, $folder);
+        }
+
         return $imageName1;
+    }
+
+    public function handleFile($file, $folder, $oldFile = null) {
+        $image = $file;
+
+        $storage = Storage::disk('public');
+        
+        $fileName = rand(1,1000).'_'. date('YmdHis') . '_' . time() . '.' . $image->getClientOriginalExtension();
+        
+        $image->storeAs('public/',$folder . '/' . $fileName);
+
+        if($oldFile != null){
+            $this->unlinkFile($oldFile, $folder);
+        }
+
+        return $fileName;
+    }
+
+    public function unlinkFile($file, $folder){
+        // Get image path
+        $path = 'storage/'.$folder.'/'.$file;
+
+        // Check image file exists
+        if(file_exists($path)) {
+           // Destroy from storage
+            unlink($path);
+        }
+
+        return true;
     }
 }

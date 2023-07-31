@@ -40,7 +40,7 @@ Route::group(['prefix'=>'admin'], function(){
         Route::get('/application', 'index')->name('application-index');
         Route::get('/application/show/{id}', 'show')->name('application-show');
         Route::post('/application/store', 'store')->name('application-store');
-        Route::post('/application/update/{id}', 'update')->name('application-upadte');
+        Route::post('/application/update/{id}', 'update')->name('application-update');
         Route::get('/application/destroy/{id}', 'destroy')->name('application-destroy');
     });
 
@@ -54,7 +54,6 @@ Route::group(['prefix'=>'admin'], function(){
     Route::controller(FeedbackController::class)->group(function () {
         Route::get('/feedback', 'index')->name('feedback-index');
         Route::get('/feedback/show/{id}', 'show')->name('feedback-show');
-        Route::post('/feedback/store', 'store')->name('feedback-store');
         Route::post('/feedback/update/{id}', 'update')->name('feedback-update');
         Route::get('/feedback/destroy/{id}', 'destroy')->name('feedback-destroy');
     });
@@ -71,7 +70,6 @@ Route::group(['prefix'=>'admin'], function(){
     // Contact actions
     Route::controller(ContactController::class)->group(function () {
         Route::get('/contact', 'index')->name('contact-index');
-        Route::get('/contact/show/{id}', 'show')->name('contact-show');
         Route::get('/contact/destroy/{id}', 'destroy')->name('contact-destroy');
     });
 

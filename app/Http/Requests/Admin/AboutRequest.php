@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 
-class AboutControllerRequest extends FormRequest
+class AboutRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +24,9 @@ class AboutControllerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title_en' => 'required|string|max:50',
-            'title_ru' => 'required|string|max:50',
-            'title_hy' => 'required|string|max:50',
             'description_en' => 'required|string|max:16777215',
             'description_ru' => 'required|string|max:16777215',
-            'description_hy' => 'required|string|max:16777215',
+            'description_hy' => 'required|string|max:16777215'
         ];
     }
 

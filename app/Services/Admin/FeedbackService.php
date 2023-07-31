@@ -2,86 +2,47 @@
 namespace App\Services\Admin;
 
 use App\Models\Feedback;
+use App\Traits\ImageUploadTrait;
                     
 class FeedbackService
 {
+    use ImageUploadTrait;
         
-    public function store($data)
+    public function store($data, $id)
     {
         // Make new feedback data
-        $new_feedback = new Feedback;
+        $new_feedback = Feedback::findOrFail($id);
         $new_feedback->title = $data['title'];
         $new_feedback->phone = $data['phone'];
         $new_feedback->description = $data['description'];
-        $new_feedback->status = 1;
+        $new_feedback->status = $data['status'];
     
         // Check has request image or not
-        if ($request->hasFile('img')) { // Has a image
-            // Get image file
-            $image = $request->file('img');
-
-            // Make image new name
-            $filename = rand(1,1000).'_'. date('YmdHis') . '_' . time() . '.' . $image->getClientOriginalExtension();
-
-            // Get path
-            $image_path = 'assets/images/feedback/' . $filename;
-
-            // Save the image to a specific path
-            $image->save($image_path);
+        if (isset($data['img'])) {
+            // Uploading
+            $filename = $this->handle($data['img'], 'feedback', 1, $new_feedback->img);
 
             // Add image filed before save data
-            $new_feedback->img = $filenema;
-        }else{ // Has not a image
-            // Add image filed before save data
-            $new_feedback->img = NULL;
+            $new_feedback->img = $filename;
         }
 
         // Save data to DB
         $new_feedback->save();
+
+        return true;
     }
 
-    public function update(){
-        // Make new feedback data
-        $new_feedback = Feedback::findOrFail($id);
-        $new_feedback->title = $request->title;
-        $new_feedback->phone = $request->phone;
-        $new_feedback->description = $request->description;
-        $new_feedback->status = $request->status;
-    
-        // Check has request image or not
-        if ($request->hasFile('img')) { // Has a image
-            // Get image file
-            $image = $request->file('img');
+    public function destroy($id){
+        // Find feedback item
+        $feedback = Feedback::findOrFail($id);
 
-            // Make image new name
-            $filename = rand(1,1000).'_'. date('YmdHis') . '_' . time() . '.' . $image->getClientOriginalExtension();
+        // Unlink image
+        $imagename = $this->unlinkFile($feedback->img, 'feedback');
 
-            // Get path
-            $image_path = 'assets/images/feedback/' . $filename;
+        // Destroy feedback item data
+        $feedback->delete();
 
-            // Save the image to a specific path
-            $image->save($image_path);
-
-            // Add image filed before save data
-            $new_feedback->img = $filenema;
-
-            // Get old image path
-            $old_image_path = 'assets/images/feedback/'.$image;
-
-            // Check image file exists
-            if(file_exists($old_image_path)) {
-                // Destroy from storage
-                unlink($old_image_path);
-            }
-
-            // Save data to DB
-            $new_feedback->save();
-
-            // Return success response
-            return response([
-                'message' => 'Feedback updated successfully !'
-            ]);
-        }
+        return true;
     }
     
 }

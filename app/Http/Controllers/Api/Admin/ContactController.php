@@ -14,22 +14,10 @@ class ContactController extends Controller
     public function index()
     {
         // Get contcact data
-        $contcact_items = ContactMessage::orderBy('id', 'desc')->get();
+        $contact_items = ContactMessage::orderBy('id', 'desc')->get();
 
-        // Return data with Json
-        return response()->json($contcact_items);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        // Get contcat detail data
-        $contcat_detail = ContactMessage::findOrFail($id);
-
-        // Return data with Json
-        return response()->json($contcat_detail);
+        // Return data to view
+        return view('admin.pages.contact', compact('contact_items'));
     }
 
     /**
@@ -40,9 +28,7 @@ class ContactController extends Controller
         // Find contact item and delete
         ContactMessage::findOrFail($id)->delete();
 
-        // Return succes response
-        return response()->json([
-            'message' => 'Contact message removed successfully'
-        ]);
+        // Return success redirect
+        return redirect()->back();
     }
 }

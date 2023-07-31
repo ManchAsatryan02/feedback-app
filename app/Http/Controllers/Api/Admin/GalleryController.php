@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Gallery;
-use App\Requests\GalleryRequest;
-use App\Service\GalleryService;
+use App\Http\Requests\Admin\GalleryRequest;
+use App\Services\Admin\GalleryService;
 
 class GalleryController extends Controller
 {
@@ -28,17 +28,15 @@ class GalleryController extends Controller
      */
     public function store(GalleryRequest $request)
     {
-        // Validate sended datas
-        $validate = $request->validate();
+       // Validate sended datas
+       $validator = $request->validated();
          
-        $data = $request->all();
+       $data = $request->all();
 
-        $this->GalleryService()->store($data);
+       (new GalleryService())->store($data, null);
 
-        // Return success response
-        return response([
-            'message' => 'Gallery added successfully !'
-        ]);
+       // Return success response
+       return redirect()->back();
     }
 
     /**
@@ -47,10 +45,10 @@ class GalleryController extends Controller
     public function show(string $id)
     {
         // Get gallery detail data
-        $gallery_detail = Gallery::findOrFail($id);
+        $gallery_item = Gallery::findOrFail($id);
         
-        // Return data with Json
-        return response()->json($gallery_detail);
+        // Return data to view
+        return view('admin.edit.gallery', compact('gallery_item'));
     }
 
     /**
@@ -59,16 +57,14 @@ class GalleryController extends Controller
     public function update(GalleryRequest $request, string $id)
     {
         // Validate sended datas
-        $validate = $request->validate();
+        $validator = $request->validated();
          
         $data = $request->all();
 
-        $this->GalleryService()->update($data);
+        (new GalleryService())->store($data, $id);
 
         // Return success response
-        return response([
-            'message' => 'Gallery updated successfully !'
-        ]);
+        return redirect()->back();
     }
 
     /**
@@ -76,24 +72,9 @@ class GalleryController extends Controller
      */
     public function destroy(string $id)
     {
-        // Find gallery items
-        $gallery = Gallery::findOrFail($id);
-
-        // Get image path
-        $image_path = 'assets/images/gallery/'.$gallery->img;
-
-        // Check image file exists
-        if(file_exists($image_path)) {
-           // Destroy from storage
-            unlink($image_path);
-        }
-
-        // Destroy gallery item data
-        $gallery->delete();
+        (new GalleryService())->destroy($id);
 
         // Return succes response
-        return response()->json([
-            'message' => 'Gallery item removed successfully'
-        ]);
+        return redirect()->back();
     }
 }

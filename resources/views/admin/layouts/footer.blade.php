@@ -2,7 +2,7 @@
 <footer class="sticky-footer bg-white">
     <div class="container my-auto">
         <div class="copyright text-center my-auto">
-            <span>Copyright &copy; Your Website 2021</span>
+            <span>&copy; Copyright  All rights reserved {{ date('Y') }}</span>
         </div>
     </div>
 </footer>

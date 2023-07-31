@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Slider;
-use App\Requests\SliderRequest;
-use App\Services\SliderService;
+use App\Http\Requests\Admin\SliderRequest;
+use App\Services\Admin\SliderService;
 
 class SliderController extends Controller
 {
@@ -16,10 +16,10 @@ class SliderController extends Controller
     public function index()
     {
         // Get slider data
-        $slider_items = Slider::orderBy('id', 'desc')->get();
+        $slider_item = Slider::first();
 
-        // Return data with Json
-        return response()->json($slider_items);
+        // Return data to view
+        return view('admin.pages.slider', compact('slider_item'));
     }
 
     /**
@@ -28,15 +28,13 @@ class SliderController extends Controller
     public function update(SliderRequest $request)
     {
         // Validate sended datas
-        $validate = $request->validate();
+        $validate = $request->validated();
          
-       $data = $request->all();
+        $data = $request->all();
 
-       $this->SliderService()->handle();
+        (new SliderService())->handle($data);
 
         // Return success response
-        return response([
-            'message' => 'Slider updated successfully !'
-        ]);
+        return redirect()->back();
     }
 }

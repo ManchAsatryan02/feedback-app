@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Requests\ContactsRequest;
+use App\Http\Requests\ContactsRequest;
 use App\Services\ContactService;
 
 class ContactController extends Controller
@@ -19,7 +19,7 @@ class ContactController extends Controller
     // Send message from contacts page
     public function send_message(ContactsRequest $request){
         // Validate sended datas
-        $validated = $request->validate();
+        $validated = $request->validated();
 
         $data = $request->all();
 

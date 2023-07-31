@@ -5,9 +5,14 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Blog;
+use App\Http\Requests\Admin\BlogRequest;
+use App\Services\Admin\BlogService;
+use App\Traits\ImageUploadTrait;
 
 class BlogController extends Controller
 {
+    use ImageUploadTrait;
+
     /**
      * Display a listing of the resource.
      */
@@ -26,16 +31,14 @@ class BlogController extends Controller
     public function store(BlogRequest $request)
     {
         // Validate sended datas
-        $validate = $request->validate();
-
+        $validator = $request->validated();
+         
         $data = $request->all();
 
-        $this->BlogService()->store($data);
+        (new BlogService())->store($data, null);
 
         // Return success response
-        return response([
-            'message' => 'Blog added successfully !'
-        ]);
+        return redirect()->back();
     }
 
     /**
@@ -44,10 +47,10 @@ class BlogController extends Controller
     public function show(string $id)
     {
         // Get blog detail data
-        $blog_detail = Blog::findOrFail($id);
+        $blog_item = Blog::findOrFail($id);
         
-        // Return data with Json
-        return response()->json($blog_detail);
+       // Return data to view
+       return view('admin.edit.blog', compact('blog_item'));
     }
 
     /**
@@ -56,17 +59,14 @@ class BlogController extends Controller
     public function update(BlogRequest $request, string $id)
     {
         // Validate sended datas
-        $validator = $request->validate();
+        $validator = $request->validated();
          
         $data = $request->all();
 
-        $this->BlogService()->update($data);
+        (new BlogService())->store($data, $id);
 
         // Return success response
-        return response([
-            'message' => 'Blog updated successfully !'
-        ]);
-        
+        return redirect()->back();
     }
 
     /**
@@ -74,34 +74,9 @@ class BlogController extends Controller
      */
     public function destroy(string $id)
     {
-        // Find blog item
-        $blog = Blog::findOrFail($id);
-
-        // Get image path
-        $image_path = 'assets/images/blog/'.$blog->img;
-
-        // Check image file exists
-        if(file_exists($image_path)) {
-           // Destroy from storage
-            unlink($image_path);
-        }
-
-        // Get file path
-        $file_path = 'assets/files/blog/'.$blog->file;
-
-        // Check file exists
-        if(file_exists($file_path)) {
-           // Destroy from storage
-            unlink($file_path);
-        }
-
-        // Destroy blog item data
-        $blog->delete();
+        (new BlogService())->destroy($id);
 
         // Return succes response
-        return response()->json([
-            'message' => 'Blog item removed successfully'
-        ]);
-       
+        return redirect()->back();
     }
 }

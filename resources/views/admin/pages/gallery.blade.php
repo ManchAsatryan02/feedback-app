@@ -4,6 +4,52 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Gallery</h1>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+            Add new item
+        </button>
+        
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">New Gallery</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form enctype="multipart/form-data" class="user" method="post" action="{{ route('gallery-store') }}">
+                            @csrf
+                            <div class="form-group">
+                                <label for="title_en">EN Title</label>
+                                <input type="text" required id="title_en" name="title_en" class="form-control" placeholder="Title">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="title_ru">RU Title</label>
+                                <input type="text" required id="title_ru" name="title_ru" class="form-control" placeholder="Title">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="title_hy">HY Title</label>
+                                <input type="text" required id="title_hy" name="title_hy" class="form-control" placeholder="Title">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="img" class="w-100">Image</label>
+                                <input type="file" class="form-control" id="img" name="img">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-user btn-block">
+                                Add
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- DataTales -->
@@ -34,7 +80,7 @@
                         @foreach($gallery_items as $item)
                             <tr>
                                 <td>{{ $item->title_hy }}</td>
-                                <td><img src="{{ asset('gallery/'.$item->img) }}" class="img-fluid"></td>
+                                <td><img src="{{ asset('storage/gallery/'.$item->img) }}" class="img-fluid"></td>
                                 <td>
                                     <a class="btn btn-sm btn-warning" href="{{ route('gallery-show', $item->id) }}">Edit</a>
                                 </td>

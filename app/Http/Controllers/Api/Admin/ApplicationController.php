@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Appliction;
-use App\Requests\Admin\ApplicationRequest;
+use App\Http\Requests\Admin\ApplicationRequest;
+use App\Services\Admin\ApplicationService;
 
 class ApplicationController extends Controller
 {
@@ -27,16 +28,14 @@ class ApplicationController extends Controller
     public function store(ApplicationRequest $request)
     {
         // Validate sended datas
-        $validate = $request->validate();
+        $validate = $request->validated();
       
         $data = $request->all();
 
-        $this->ApplicationService()->store($data);
+        (new ApplicationService())->store($data);
 
         // Return success response
-        return response([
-            'message' => 'Application added successfully !'
-        ]);
+        return redirect()->back();
     }
 
     /**
@@ -45,10 +44,10 @@ class ApplicationController extends Controller
     public function show(string $id)
     {
         // Get application detail data
-        $application_detail = Appliction::findOrFail($id);
+        $application_item = Appliction::findOrFail($id);
 
-        // Return data with Json
-        return response()->json($application_detail);
+        // Return data to view
+       return view('admin.edit.application', compact('application_item'));
     }
 
     /**
@@ -57,11 +56,14 @@ class ApplicationController extends Controller
     public function update(ApplicationRequest $request, string $id)
     {
         // Validate sended datas
-        $validate = $request->validate();
-         
+        $validate = $request->validated();
+      
         $data = $request->all();
 
-        $this->ApplicationService()->update($data);
+        (new ApplicationService())->store($data, $id);
+
+        // Return success response
+        return redirect()->back();
     }
 
     /**
@@ -69,51 +71,9 @@ class ApplicationController extends Controller
      */
     public function destroy(string $id)
     {
-        // Find application item
-        $application = Appliction::findOrFail($id);
-
-        // Get image path
-        $image_path = 'assets/images/application/'.$application->img;
-
-        // Check image file exists
-        if(file_exists($image_path)) {
-           // Destroy from storage
-            unlink($image_path);
-        }
-
-        // Get exc path
-        $exc_path = 'assets/files/application/'.$application->exc;
-
-        // Check exc exists
-        if(file_exists($exc_path)) {
-            // Destroy from storage
-            unlink($exc_path);
-        }
-
-        // Get word path
-        $word_path = 'assets/files/application/'.$application->word;
-
-        // Check word exists
-        if(file_exists($word_path)) {
-            // Destroy from storage
-            unlink($word_path);
-        }
-
-        // Get pdf path
-        $pdf_path = 'assets/files/application/'.$application->pdf;
-
-        // Check pdf exists
-        if(file_exists($pdf_path)) {
-            // Destroy from storage
-            unlink($pdf_path);
-        }
-
-        // Destroy application item data
-        $application->delete();
+        (new ApplicationService())->destroy($id);
 
         // Return succes response
-        return response()->json([
-            'message' => 'Application item removed successfully'
-        ]);
+        return redirect()->back();
     }
 }

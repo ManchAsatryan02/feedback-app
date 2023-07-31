@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\FeedbackRequest;
-use Illuminate\Support\Facades\Validator;
 use App\Services\FeedbackService;
 use App\Traits\ImageUploadTrait;
 use App\Models\Feedback;
@@ -32,7 +31,7 @@ class FeedbackController extends Controller
     // Send message from home page as feedback
     public function send_feedback(FeedbackRequest $request){
         // Validate sended datas
-        $validate = $request->validate();
+        $validate = $request->validated();
 
         $data = $request->all();
 
